@@ -47,6 +47,7 @@ end
 
 # Custom
 gem 'jsonapi-serializer', '~> 2.2'
+gem 'pagy', '~> 6.1'
 
 group :development, :test do
   gem 'database_cleaner'

@@ -3,12 +3,14 @@ class Api::V1::EmployeesController < ApplicationController
   before_action :set_employee, only: %i[update show destroy]
 
   def index
-    @employees = @tenant.employees.all
-    render json: EmployeeSerializer.new(@employees).serializable_hash[:data]
+    pagy, records = pagy(@tenant.employees.all)
+    pagy_headers_merge(pagy)
+    render json: EmployeeSerializer.new(records).serializable_hash[:data]
   end
 
   def create
     @employee = Employee.create(employee_params)
+
     if @employee.save
       render json: EmployeeSerializer.new(@employee).serializable_hash[:data][:attributes], status: 200
     else

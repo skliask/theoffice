@@ -1,20 +1,32 @@
 RSpec.describe 'Employees', type: :request do
   let(:tenant) { create(:tenant) }
-  let!(:employees) { create_list(:employee, 10, tenant_id: tenant.id) }
+  let!(:employees) { create_list(:employee, 30, tenant_id: tenant.id) }
   let(:employee_id) { employees.first.id }
 
   describe 'GET /employees' do
     before { get "/api/v1/tenants/#{tenant.id}/employees" }
 
     it 'returns employees' do
-      json = JSON.parse response.body
-
+      json = JSON.parse(response.body)
       expect(json).not_to be_empty
-      expect(json.size).to eq(10)
+      expect(json.size).to eq(20)
     end
 
     it 'returns status code 200' do
       expect(response).to have_http_status(200)
+    end
+
+    it 'has_pagination' do
+      headers = response.headers
+      expect(headers["current-page"]).to eq('1')
+      expect(headers["total-pages"]).to eq('2')
+      expect(headers["total-count"]).to eq('30')
+    end
+
+    it "paginates" do
+      get "/api/v1/tenants/#{tenant.id}/employees?page=2"
+      json = JSON.parse(response.body)
+      expect(json.size).to eq(10)
     end
   end
 

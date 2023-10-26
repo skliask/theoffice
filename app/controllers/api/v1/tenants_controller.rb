@@ -2,8 +2,9 @@ class Api::V1::TenantsController < ApplicationController
   before_action :set_tenant, only: %i[show]
 
   def index
-    @tenants = Tenant.all
-    render json: TenantSerializer.new(@tenants).serializable_hash[:data]
+    pagy, records = pagy(Tenant.all)
+    pagy_headers_merge(pagy)
+    render json: TenantSerializer.new(records).serializable_hash[:data]
   end
 
   def show
