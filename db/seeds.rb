@@ -7,3 +7,17 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+3.times do
+  tenant = Tenant.create(
+    name: Faker::Company.name
+  )
+
+  200.times do
+    tenant.employees.create(
+      name: Faker::Name.unique.name,
+      email: Faker::Internet.unique.email,
+      role: Faker::Number.between(from: 0, to: 3)
+    )
+  end
+end

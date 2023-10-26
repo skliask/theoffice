@@ -52,7 +52,7 @@ group :development, :test do
   gem 'database_cleaner'
   gem 'rspec-rails', '~> 6.0', '>= 6.0.3'
   gem 'faker', '~> 3.2', '>= 3.2.1'
-  gem 'factory_bot', '~> 6.3'
+  gem 'factory_bot_rails', '~> 6.2'
   gem 'shoulda-matchers', '~> 5.3'
   gem 'pry-byebug'
 end

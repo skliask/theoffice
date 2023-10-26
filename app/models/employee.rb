@@ -5,7 +5,7 @@
 #  id         :bigint           not null, primary key
 #  email      :string
 #  name       :string
-#  role       :integer          default(0), not null
+#  role       :integer          default("marketing"), not null
 #  created_at :datetime         not null
 #  updated_at :datetime         not null
 #  tenant_id  :bigint           not null
@@ -25,4 +25,5 @@ class Employee < ApplicationRecord
 
   validates :name, :email, :role, presence: true
   validates :email, uniqueness: { case_sensitive: false }
+  validates :role, inclusion: { in: Employee.roles.keys }
 end
