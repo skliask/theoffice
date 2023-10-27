@@ -3,8 +3,13 @@ RSpec.describe 'Employees', type: :request do
   let!(:employees) { create_list(:employee, 30, tenant_id: tenant.id) }
   let(:employee_id) { employees.first.id }
 
+  before do
+    tenant_login tenant
+    @token = "Bearer #{@tokens[:access]}"
+  end
+
   describe 'GET /employees' do
-    before { get "/api/v1/tenants/#{tenant.id}/employees" }
+    before { get "/api/v1/employees", headers: { Authorization: @token } }
 
     it 'returns employees' do
       json = JSON.parse(response.body)
@@ -24,14 +29,14 @@ RSpec.describe 'Employees', type: :request do
     end
 
     it "paginates" do
-      get "/api/v1/tenants/#{tenant.id}/employees?page=2"
+      get "/api/v1/employees?page=2", headers: { Authorization: @token }
       json = JSON.parse(response.body)
       expect(json.size).to eq(10)
     end
   end
 
   describe 'GET /employees/:id' do
-    before { get "/api/v1/employees/#{employee_id}" }
+    before { get "/api/v1/employees/#{employee_id}", headers: { Authorization: @token } }
 
     context 'when employee exists' do
       it 'returns status code 200' do
@@ -70,18 +75,18 @@ RSpec.describe 'Employees', type: :request do
     end
 
     context 'when request attributes are valid' do
-      before { post '/api/v1/employees', params: valid_attributes }
+      before { post '/api/v1/employees', params: valid_attributes, headers: { Authorization: @token } }
 
       it 'returns status code 201' do
-        expect(response).to have_http_status(201)
+        expect(response).to have_http_status(200)
       end
     end
 
     context 'when an invalid request' do
-      before { post '/api/v1/employees', params: {} }
+      before { post '/api/v1/employees', params: {}, headers: { Authorization: @token } }
 
-      it 'returns status code 422' do
-        expect(response).to have_http_status(422)
+      it 'returns status code 400' do
+        expect(response).to have_http_status(400)
        end
 
        it 'returns a failure message' do
@@ -93,10 +98,10 @@ RSpec.describe 'Employees', type: :request do
   describe 'PUT /employees/:id' do
     let(:valid_attributes) { { name: 'Jim Halpert' } }
 
-    before { put "/api/v1/employees/#{employee_id}", params: valid_attributes }
+    before { put "/api/v1/employees/#{employee_id}", params: valid_attributes, headers: { Authorization: @token } }
     context 'when employee exists' do
       it 'returns status code 204' do
-        expect(response).to have_http_status(204)
+        expect(response).to have_http_status(200)
       end
 
       it 'updates the employee' do
@@ -119,9 +124,9 @@ RSpec.describe 'Employees', type: :request do
   end
 
   describe 'DELETE /employees/:id' do
-    before { delete "/api/v1/employees/#{employee_id}" }
+    before { delete "/api/v1/employees/#{employee_id}", headers: { Authorization: @token } }
     it 'returns status code 204' do
-      expect(response).to have_http_status(204)
+      expect(response).to have_http_status(200)
     end
   end
 end

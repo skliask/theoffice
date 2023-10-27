@@ -1,15 +1,14 @@
-class Api::V1::EmployeesController < ApplicationController
-  before_action :set_tenant, only: %i[index]
+class Api::V1::EmployeesController < Api::V1::BaseController
   before_action :set_employee, only: %i[update show destroy]
 
   def index
-    pagy, records = pagy(@tenant.employees.all)
+    pagy, records = pagy(current_tenant.employees.all)
     pagy_headers_merge(pagy)
     render json: EmployeeSerializer.new(records).serializable_hash[:data]
   end
 
   def create
-    @employee = Employee.create(employee_params)
+    @employee = current_tenant.employees.create(employee_params)
 
     if @employee.save
       render json: EmployeeSerializer.new(@employee).serializable_hash[:data][:attributes], status: 200
@@ -45,10 +44,6 @@ class Api::V1::EmployeesController < ApplicationController
     end
 
     def set_employee
-      @employee = Employee.find(params[:id])
-    end
-
-    def set_tenant
-      @tenant = Tenant.find(params[:tenant_id])
+      @employee = current_tenant.employees.find(params[:id])
     end
 end

@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+  get "login/create"
+  get "login/destroy"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
@@ -7,13 +9,12 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :tenants, only: [:index, :show] do
-        resources :employees, only: [:index]
-      end
-
-      resources :employees, except: [:index]
+      resource :tenants, only: [:show]
+      resources :employees
     end
   end
+
+  resource :login, only: [:create, :destroy]
 
   # Defines the root path route ("/")
   # root "posts#index"
