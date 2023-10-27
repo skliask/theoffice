@@ -26,4 +26,8 @@ class Employee < ApplicationRecord
   validates :name, :email, :role, presence: true
   validates :email, uniqueness: { case_sensitive: false }
   validates :role, inclusion: { in: Employee.roles.keys }
+
+  scope :find_by_email, -> (email) { where email: email }
+  scope :filter_by_role, -> (role) { where role: role }
+  scope :find_by_name, -> (name) { where("name ILIKE ?", "%#{ name }%") }
 end
